@@ -10,7 +10,7 @@ public class Main {
     static String rem_IP, rem_port, local_IP, local_port, conStatus, UID, inode;
 
     static enum tcp_status { /* As defined in ./include/net/tcp_states.h */
-        TCP_ESTABLISHED ,
+        TCP_ESTABLISHED,
         TCP_SYN_SENT,
         TCP_SYN_RECV,
         TCP_FIN_WAIT1,
@@ -25,7 +25,6 @@ public class Main {
     }
 
 
-
     public static void main(String[] args) throws IOException {
         // write your code here
 
@@ -33,8 +32,6 @@ public class Main {
         Charset charsetD = Charset.forName("UTF-8");
         tcpConnections = readFile("/proc/net/tcp", charsetD);
         processFile(tcpConnections);
-
-
 
 
         //System.out.println("eachTcpConnections=" + tcpConArray[1]);
@@ -48,6 +45,8 @@ public class Main {
         String tcpConArray[] = Connections.split("\n"); //Split to line by line
         //totTCPCon = 1 because excluded the header
         //Loop through each line
+        System.out.println("After processing");
+
         for (int tcpConIndex = 1; tcpConIndex < tcpConArray.length; tcpConIndex++) {
             tcpCon = tcpConArray[tcpConIndex];
             pattern = "(\\s\\s)+"; // reg pattern to match two or more spaces
@@ -69,7 +68,7 @@ public class Main {
             UID = tcpIndividualConn[7];
             inode = tcpIndividualConn[9];
 
-            System.out.println(local_IP + " " + local_port + " " + rem_IP + " " + rem_port + " " + tcpStatus);
+            System.out.println(local_IP + " " + local_port + " " + rem_IP + " " + rem_port + " " + conStatus);
             //System.out.println("tcpConFieldsLength=" + tcpCon);
             //System.out.println("tcpConFieldsLength=" + tcpConFields.length);
             //String  local_addressHEX = tcpConFields[1];
