@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Main {
     static String tcpConnections, tcpCon, pattern;
-    static String rem_IP, rem_port, local_IP, local_port, conStatus, UID, inode;
+    static String rem_IP, rem_port, local_IP, local_port, UID, inode, tcpConStatus, timestamp;
+    static int conStatusCode;
 
     static enum tcp_status { /* As defined in ./include/net/tcp_states.h */
         TCP_ESTABLISHED,
@@ -27,11 +31,17 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         // write your code here
-
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date dt = new Date();
+        System.out.println("Time: " + dateFormat.format(dt));
 
         Charset charsetD = Charset.forName("UTF-8");
         tcpConnections = readFile("/proc/net/tcp", charsetD);
-        processFile(tcpConnections);
+        timestamp = dateFormat.format(dt);
+        processFile(tcpConnections, timestamp);
+
+
+        System.out.println("Time: " + dateFormat.format(dt));
 
 
         //System.out.println("eachTcpConnections=" + tcpConArray[1]);
@@ -40,7 +50,7 @@ public class Main {
 
     }
 
-    private static void processFile(String Connections) {
+    private static void processFile(String Connections, String timestamp) {
         System.out.print(Connections);
         String tcpConArray[] = Connections.split("\n"); //Split to line by line
         //totTCPCon = 1 because excluded the header
@@ -62,13 +72,19 @@ public class Main {
             rem_IP = little_endianIP_to_decimal(rem_addressHEX[0]);
             rem_port = hex_to_decimal(rem_addressHEX[1]);
 
-            conStatus = hex_to_decimal(tcpIndividualConn[3]);
-            //tcp_status tcpStatus = tcp_status.TCP_CLOSE_WAIT;
+            conStatusCode = Integer.parseInt(hex_to_decimal(tcpIndividualConn[3]));
+
+            //Not optimized | performance degradation
+            //as arrays are mutable, values() must return a copy of the array of elements just in case you happen to change it.
+            // Creating this copy each time is relatively expensive
+            tcpConStatus = tcp_status.values()[conStatusCode].toString();
 
             UID = tcpIndividualConn[7];
             inode = tcpIndividualConn[9];
 
-            System.out.println(local_IP + " " + local_port + " " + rem_IP + " " + rem_port + " " + conStatus);
+            System.out.println("timestamp" + " " + "local_IP" + " " + "local_port" + " " + "rem_IP" + " " + "rem_port" + " " + "tcpConStatus");
+
+            System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus);
             //System.out.println("tcpConFieldsLength=" + tcpCon);
             //System.out.println("tcpConFieldsLength=" + tcpConFields.length);
             //String  local_addressHEX = tcpConFields[1];
