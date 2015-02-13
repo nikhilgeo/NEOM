@@ -1,4 +1,4 @@
-package com.company;
+package com.nikhilgeo;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -8,10 +8,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Main {
+public class NEOM {
     static String tcpConnections, tcpCon, pattern;
     static String rem_IP, rem_port, local_IP, local_port, UID, inode, tcpConStatus, timestamp;
     static int conStatusCode;
+
 
     static enum tcp_status { /* As defined in ./include/net/tcp_states.h */
         TCP_ESTABLISHED,
@@ -30,18 +31,26 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        // write your code here
+        /* Uncomment ALL
+        Utilities utilities = new Utilities();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dt = new Date();
         System.out.println("Time: " + dateFormat.format(dt));
 
-        Charset charsetD = Charset.forName("UTF-8");
-        tcpConnections = readFile("/proc/net/tcp", charsetD);
-        timestamp = dateFormat.format(dt);
-        processFile(tcpConnections, timestamp);
 
-
+        tcpConnections = utilities.readFile_InOneGO("/proc/net/tcp");
+        if (tcpConnections != "") {
+            timestamp = dateFormat.format(dt);
+            processFile(tcpConnections, timestamp);
+        } else {
+            System.out.println("No data from File read");
+        }
         System.out.println("Time: " + dateFormat.format(dt));
+*/
+
+
+        Inode_uid_process_Maping obj = new Inode_uid_process_Maping();
+        obj.getvalues();
 
 
         //System.out.println("eachTcpConnections=" + tcpConArray[1]);
@@ -89,13 +98,6 @@ public class Main {
             //System.out.println("tcpConFieldsLength=" + tcpConFields.length);
             //String  local_addressHEX = tcpConFields[1];
         }
-    }
-
-
-    static String readFile(String path, Charset encoding)
-            throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
     }
 
     private static String hex_to_decimal(String hex) {
