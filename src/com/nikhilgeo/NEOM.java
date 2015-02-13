@@ -50,7 +50,7 @@ public class NEOM {
 
 
         Inode_uid_process_Maping obj = new Inode_uid_process_Maping();
-        obj.getvalues();
+        obj.get_pid_inode_processName();
 
 
         //System.out.println("eachTcpConnections=" + tcpConArray[1]);
