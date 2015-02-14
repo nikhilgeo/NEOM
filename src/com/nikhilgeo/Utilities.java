@@ -20,4 +20,28 @@ public class Utilities {
         }
         return fileContents;
     }
+
+    public String hex_to_decimal(String hex) {
+        int decimal;
+        decimal = Integer.parseInt(hex, 16);
+        return String.valueOf(decimal);
+    }
+
+    public String little_endianIP_to_decimal(String little_endian_IP) {
+        //System.out.println("little_endian_IP =" + little_endian_IP);
+        String octect, IPAddr;
+        int decimal;
+        StringBuilder reversed_IP = new StringBuilder("");
+
+        for (int index = little_endian_IP.length() - 1; index >= 0; index = index - 2) {
+            octect = little_endian_IP.substring(index - 1, index + 1);
+            //System.out.println("octect" + octect);
+            decimal = Integer.parseInt(octect, 16);
+            //System.out.println("decimal" + decimal);
+            reversed_IP = reversed_IP.append(decimal);
+            reversed_IP = reversed_IP.append(":");
+        }
+        IPAddr = reversed_IP.toString();
+        return IPAddr.substring(0, IPAddr.length() - 1);
+    }
 }
