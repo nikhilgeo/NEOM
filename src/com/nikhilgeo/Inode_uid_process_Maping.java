@@ -3,6 +3,7 @@ package com.nikhilgeo;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -10,19 +11,20 @@ import java.util.List;
  * Created by nikhil on 13/2/15.
  */
 public class Inode_uid_process_Maping {
+
     /**
-     * * To DO **
+     * To Do List:
+     * make get_pid_inode_processName a thread
+     * Hashtable lookup function
+     * Optimization: There are pid with empty inode numbers -- Handle it/not > will remove empty inode in hashtable
      */
-// create a hashtable with multi value
-//read all the dir in /proc pids - Done
-//read the cmd in those folder process name - Done
-//read the fd ln -s in /proc inode
-
-
     private Utilities utilities;
-    public Hashtable inode_pid_pname_mapping = new Hashtable();
+    // Hashtable<indode, [process_name, pid]>
+    public Hashtable<String, List<String>> inode_pid_pname_mapping = new Hashtable<String, List<String>>();
 
-    //Filer for DirectoryStream Iterator to return directory only
+    /**
+     * Filer for DirectoryStream Iterator to return directory only
+     */
     private static class DirectoriesFilter implements DirectoryStream.Filter<Path> {
         @Override
         public boolean accept(Path entry) throws IOException {
@@ -30,10 +32,15 @@ public class Inode_uid_process_Maping {
         }
     }
 
+    /**
+     * Get all the pid folders in the /proc
+     * Invoke get_ProcessName() to find process name corresponding to pid
+     * Invoke get_inode() to find all the inode numbers related to pid
+     */
     public void get_pid_inode_processName() {
 
         String regex = "\\d+", pid_DirName, pid, processName;
-        List<String> inodes_of_a_process = new ArrayList<String>();
+        List<String> inodes_of_a_process;
         Path path = Paths.get("/proc");
         try {
             DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path, new DirectoriesFilter());
@@ -43,32 +50,26 @@ public class Inode_uid_process_Maping {
                 pid_DirName = p.getFileName().toString();
                 if (pid_DirName.matches(regex)) // To select the pid/numerical folders only
                 {
-                    System.out.println(p.getFileName());
+                    //System.out.println(p.getFileName());
                     pid = p.getFileName().toString();
                     processName = get_ProcessName(pid_DirName);
                     inodes_of_a_process = get_inode(pid_DirName);
-                    update_inode_pid_pname_mapping(inodes_of_a_process, processName, pid); // Update HashTable: Is HashMap better ?
-                    System.out.println(inode_pid_pname_mapping.get("37017"));
+                    add_inode_pid_pname_mapping(inodes_of_a_process, processName, pid); // Update HashTable: Is HashMap better ?
                 }
             }
+            print_HashTable_getInode_pid_pname_mapping();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private void update_inode_pid_pname_mapping(List<String> inodes_of_a_process, String processName, String pid) {
-       List<String> pid_process = new ArrayList<String>();
-        pid_process.add(processName);
-        pid_process.add(pid);
-        for (String inode : inodes_of_a_process) {
-            // Code for adding the the values in the hashtable: TBD
-            //System.out.println(inode);
-            inode_pid_pname_mapping.put(inode,pid_process);
-
-        }
-
-    }
-
+    /**
+     * get the all the inode numbers corresponding to a process.
+     * ls -l /proc/pid/fd
+     *
+     * @param pid_dirName
+     * @return
+     */
     private List<String> get_inode(String pid_dirName) {
         //readSymbolicLink(Path link)
         List<String> inodeList = new ArrayList<String>();
@@ -91,12 +92,12 @@ public class Inode_uid_process_Maping {
                 // pipe:[92942] possibly can be removed: double check :TBD
                 if (inode_link_target.matches(socket_regex) || inode_link_target.matches(pipe_regex)) {
                     //System.out.println(p.getFileName());
-                    System.out.println(inode_link_target); // only inode link targets will be printed
+                    //System.out.println(inode_link_target); // only inode link targets will be printed
 
                     //Alternative method: Use regex: TBD
                     //http://stackoverflow.com/questions/4662215/how-to-extract-a-substring-using-regex
                     inode = inode_link_target.substring(inode_link_target.indexOf('[') + 1, inode_link_target.indexOf(']'));
-                    System.out.println(inode); // only inode link targets will be printed
+                    //System.out.println(inode); // only inode link targets will be printed
                     inodeList.add(inode);
                 }
             }
@@ -106,13 +107,19 @@ public class Inode_uid_process_Maping {
         return inodeList;
     }
 
+    /**
+     * Function to fetch the process name found in /proc/pid/cmdline file.
+     *
+     * @param pid_dirName
+     * @return process name
+     */
     private String get_ProcessName(String pid_dirName) {
         try {
             utilities = new Utilities();
             String cmdlineFile = "/proc/" + pid_dirName + "/cmdline";
             String processName = utilities.readFile_InOneGO(cmdlineFile);
             String processName_split[] = processName.split(" ");
-            System.out.println("Process Name: " + processName_split[0]);
+            //System.out.println("Process Name: " + processName_split[0]);
             return processName_split[0];
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -120,4 +127,63 @@ public class Inode_uid_process_Maping {
         }
     }
 
+    /**
+     * Add a new inode - pid - process name mapping into Hash Table
+     * Hashtable<inode, List<pid, process_name>>
+     *
+     * @param inodes_of_a_process
+     * @param processName
+     * @param pid
+     */
+    private void add_inode_pid_pname_mapping(List<String> inodes_of_a_process, String processName, String pid) {
+        List<String> pid_process = new ArrayList<String>();
+        pid_process.add(processName);
+        pid_process.add(pid);
+        for (String inode : inodes_of_a_process) {
+            //System.out.println(inode);
+            inode_pid_pname_mapping.put(inode, pid_process);
+
+        }
+
+    }
+
+    /**
+     * Lookup an inode for process name and pid in the Hashtable
+     *
+     * @param inode
+     * @return List<processName, pid>
+     */
+    public List<String> pid_processName_lookup(String inode) {
+        List<String> pid_pName = null;
+        try {
+            pid_pName = inode_pid_pname_mapping.get(inode);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return pid_pName;
+    }
+
+    /**
+     * Hash Table enumeration method: Print all the <key,value> pair for DEBUG purpose.
+     */
+    public void print_HashTable_getInode_pid_pname_mapping() {
+        Enumeration key_inode_iterator;
+        String key_inode;
+        key_inode_iterator = inode_pid_pname_mapping.keys();
+
+        /*List<String> test = new ArrayList<String>();
+        test = inode_pid_pname_mapping.get("73369");*/
+
+        System.out.println("----------------The Whole HashTable: Begin-------------");
+
+        while (key_inode_iterator.hasMoreElements()) {
+            key_inode = (String) key_inode_iterator.nextElement();
+            System.out.println(key_inode + ": " + inode_pid_pname_mapping.get(key_inode));
+        }
+
+        System.out.println("----------------The Whole HashTable: End-------------");
+
+        System.out.println("------------Individual Element Lookup for inode(key): " + "12059");
+        System.out.println(inode_pid_pname_mapping.get("12059"));
+    }
 }
