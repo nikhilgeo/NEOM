@@ -15,12 +15,13 @@ public class Inode_uid_process_Maping {
     /**
      * To Do List:
      * make get_pid_inode_processName a thread
-     * Hashtable lookup function
+     * Update hastable peridically
      * Optimization: There are pid with empty inode numbers -- Handle it/not > will remove empty inode in hashtable
      */
     private Utilities utilities;
     // Hashtable<indode, [process_name, pid]>
-    public Hashtable<String, List<String>> inode_pid_pname_mapping = new Hashtable<String, List<String>>();
+    // Static so that all the objects will share a single copy of hash table
+    public static Hashtable<String, List<String>> inode_pid_pname_mapping = new Hashtable<String, List<String>>();
 
     /**
      * Filer for DirectoryStream Iterator to return directory only
@@ -57,7 +58,7 @@ public class Inode_uid_process_Maping {
                     add_inode_pid_pname_mapping(inodes_of_a_process, processName, pid); // Update HashTable: Is HashMap better ?
                 }
             }
-            print_HashTable_getInode_pid_pname_mapping();
+            //print_HashTable_getInode_pid_pname_mapping();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -137,8 +138,8 @@ public class Inode_uid_process_Maping {
      */
     private void add_inode_pid_pname_mapping(List<String> inodes_of_a_process, String processName, String pid) {
         List<String> pid_process = new ArrayList<String>();
-        pid_process.add(processName);
         pid_process.add(pid);
+        pid_process.add(processName);
         for (String inode : inodes_of_a_process) {
             //System.out.println(inode);
             inode_pid_pname_mapping.put(inode, pid_process);
@@ -157,6 +158,11 @@ public class Inode_uid_process_Maping {
         List<String> pid_pName = null;
         try {
             pid_pName = inode_pid_pname_mapping.get(inode);
+            if (pid_pName == null) {
+                pid_pName = new ArrayList<String>();
+                pid_pName.add("Unknown");
+                pid_pName.add("Unknown");
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -183,7 +189,7 @@ public class Inode_uid_process_Maping {
 
         System.out.println("----------------The Whole HashTable: End-------------");
 
-        System.out.println("------------Individual Element Lookup for inode(key): " + "12059");
-        System.out.println(inode_pid_pname_mapping.get("12059"));
+        System.out.println("------------Individual Element Lookup for inode(key): " + " ");
+        //System.out.println(inode_pid_pname_mapping.get("12059"));
     }
 }
