@@ -48,6 +48,7 @@ public class Inode_uid_process_Maping {
                     processName = get_ProcessName(pid_DirName);
                     inodes_of_a_process = get_inode(pid_DirName);
                     update_inode_pid_pname_mapping(inodes_of_a_process, processName, pid); // Update HashTable: Is HashMap better ?
+                    System.out.println(inode_pid_pname_mapping.get("37017"));
                 }
             }
         } catch (Exception ex) {
@@ -56,9 +57,16 @@ public class Inode_uid_process_Maping {
     }
 
     private void update_inode_pid_pname_mapping(List<String> inodes_of_a_process, String processName, String pid) {
+       List<String> pid_process = new ArrayList<String>();
+        pid_process.add(processName);
+        pid_process.add(pid);
         for (String inode : inodes_of_a_process) {
             // Code for adding the the values in the hashtable: TBD
+            //System.out.println(inode);
+            inode_pid_pname_mapping.put(inode,pid_process);
+
         }
+
     }
 
     private List<String> get_inode(String pid_dirName) {
