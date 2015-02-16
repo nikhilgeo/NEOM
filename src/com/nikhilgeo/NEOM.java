@@ -101,7 +101,7 @@ public class NEOM {
 
 
             //System.out.println("Inode for lookup =" + inode);
-            pid_pname = inode_uid_process_maping.pid_processName_lookup(inode);
+            pid_pname = inode_uid_process_maping.pid_processName_lookup(inode); //pid and processname lookup in Hashtable
             //System.out.println(pid_pname);
             if (pid_pname != null) {
 
@@ -109,7 +109,6 @@ public class NEOM {
                 //System.out.println("pid" + pid);
                 processName = pid_pname.get(1);
                 //System.out.println("processName" + processName);
-
             }
             //System.out.println("timestamp" + " " + "local_IP" + " " + "local_port" + " " + "rem_IP" + " " + "rem_port" + " " + "tcpConStatus");
 
