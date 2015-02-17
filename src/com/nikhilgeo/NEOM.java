@@ -70,34 +70,39 @@ public class NEOM {
         for (int tcpConIndex = 1; tcpConIndex < tcpConArray.length; tcpConIndex++) {
             //System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + UID);
 
+
             tcpCon = tcpConArray[tcpConIndex];
+             /* Not needed regex based split implemented
             pattern = "(\\s\\s)+"; // reg pattern to match even number of spaces
             tcpCon = tcpCon.replaceAll(pattern, " ").trim(); //replace all even no of spaces with single space
             tcpCon = tcpCon.replaceAll(pattern, " ").trim(); //replace the even no of spaces created coz of above
             //System.out.println("tcpCon=" + tcpCon);
             String tcpIndividualConn[] = tcpCon.split(" "); //split each field by space
+            */
+
+            String tcpIndividualConn[] = tcpCon.split("\\s+");
 
             //System.out.println("Length of tcpIndividualConn= " + tcpIndividualConn.length);
             //System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + UID);
 
 
-            String local_SocketHEX[] = tcpIndividualConn[1].split(":"); //split Local IP:Port
+            String local_SocketHEX[] = tcpIndividualConn[2].split(":"); //split Local IP:Port
             local_IP = utilities.little_endianIP_to_decimal(local_SocketHEX[0]);
             local_port = utilities.hex_to_decimal(local_SocketHEX[1]);
 
-            String rem_addressHEX[] = tcpIndividualConn[2].split(":"); //split Remote IP:Port
+            String rem_addressHEX[] = tcpIndividualConn[3].split(":"); //split Remote IP:Port
             rem_IP = utilities.little_endianIP_to_decimal(rem_addressHEX[0]);
             rem_port = utilities.hex_to_decimal(rem_addressHEX[1]);
 
-            conStatusCode = Integer.parseInt(utilities.hex_to_decimal(tcpIndividualConn[3]));
+            conStatusCode = Integer.parseInt(utilities.hex_to_decimal(tcpIndividualConn[4]));
 
             //Not optimized | performance degradation
             //as arrays are mutable, values() must return a copy of the array of elements just in case you happen to change it.
             // Creating this copy each time is relatively expensive
             tcpConStatus = tcp_status.values()[conStatusCode].toString();
 
-            UID = tcpIndividualConn[7];
-            inode = tcpIndividualConn[9];
+            UID = tcpIndividualConn[8];
+            inode = tcpIndividualConn[10];
 
 
             //System.out.println("Inode for lookup =" + inode);
