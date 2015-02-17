@@ -1,9 +1,6 @@
 package com.nikhilgeo;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,8 +14,7 @@ public class NEOM {
     static Utilities utilities = new Utilities();
     static Inode_uid_process_Maping inode_uid_process_maping = new Inode_uid_process_Maping();
 
-
-    static enum tcp_status { /* As defined in ./include/net/tcp_states.h */
+    public static enum tcp_status { /* As defined in ./include/net/tcp_states.h */
         TCP_ESTABLISHED,
         TCP_SYN_SENT,
         TCP_SYN_RECV,
