@@ -121,16 +121,15 @@ public class Inode_uid_process_Maping {
     private String get_ProcessName(String pid_dirName) {
         try {
             utilities = new Utilities();
-            String process_name = "Unknown";
-            //String processName_split;
+            String process_name = "Unknown", process_name_fullPath;
             Path proc_pid_exe;
             Path proc_pid_exe_target;
             proc_pid_exe = Paths.get("/proc/" + pid_dirName + "/exe");
 
             if (Files.isSymbolicLink(proc_pid_exe)) {
                 proc_pid_exe_target = Files.readSymbolicLink(proc_pid_exe);
-                process_name = proc_pid_exe_target.toString();
-                // processName_split = process_name.split(" ");
+                String processName_split[] = proc_pid_exe_target.toString().split("/");
+                process_name = processName_split[processName_split.length - 1];
             }
             //System.out.println("Process Name: " + process_name);//processName_split[0]);
             return process_name;
