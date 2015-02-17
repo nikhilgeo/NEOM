@@ -53,9 +53,13 @@ public class Inode_uid_process_Maping {
                 {
                     //System.out.println(p.getFileName());
                     pid = p.getFileName().toString();
-                    processName = get_ProcessName(pid_DirName);
                     inodes_of_a_process = get_inode(pid_DirName);
-                    add_inode_pid_pname_mapping(inodes_of_a_process, processName, pid); // Update HashTable: Is HashMap better ?
+                    // Some PID won't be having inodes in fd, these pid will have no link in /proc/pid/exe
+                    // so skip them
+                    if (!inodes_of_a_process.isEmpty()) {
+                        processName = get_ProcessName(pid_DirName);
+                        add_inode_pid_pname_mapping(inodes_of_a_process, processName, pid); // Update HashTable: Is HashMap better ?
+                    }
                 }
             }
             //print_HashTable_getInode_pid_pname_mapping();
@@ -128,7 +132,7 @@ public class Inode_uid_process_Maping {
                 process_name = proc_pid_exe_target.toString();
                 // processName_split = process_name.split(" ");
             }
-            System.out.println("Process Name: " + process_name);//processName_split[0]);
+            //System.out.println("Process Name: " + process_name);//processName_split[0]);
             return process_name;
         } catch (Exception ex) {
             ex.printStackTrace();
