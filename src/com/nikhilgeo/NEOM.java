@@ -52,6 +52,7 @@ public class NEOM {
     private static void processFile(String Connections, String timestamp) {
 
         System.out.print(Connections);
+        ArrayList<NW_Interfaces> nw_inter_list = new ArrayList<NW_Interfaces>();
         List<String> pid_pname = new ArrayList<String>();
         String tcpConArray[] = Connections.split("\n"); //Split to line by line
 
@@ -65,8 +66,7 @@ public class NEOM {
         //Loop through each line
         for (int tcpConIndex = 1; tcpConIndex < tcpConArray.length; tcpConIndex++) {
             //System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + UID);
-
-
+            StringBuilder log_per_con = new StringBuilder(timestamp);
             tcpCon = tcpConArray[tcpConIndex];
              /* Not needed regex based split implemented
             pattern = "(\\s\\s)+"; // reg pattern to match even number of spaces
@@ -81,7 +81,6 @@ public class NEOM {
             //System.out.println("Length of tcpIndividualConn= " + tcpIndividualConn.length);
             //System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + UID);
 
-
             String local_SocketHEX[] = tcpIndividualConn[2].split(":"); //split Local IP:Port
             local_IP = utilities.little_endianIP_to_decimal(local_SocketHEX[0]);
             local_port = utilities.hex_to_decimal(local_SocketHEX[1]);
@@ -90,7 +89,6 @@ public class NEOM {
             rem_IP = utilities.little_endianIP_to_decimal(rem_addressHEX[0]);
             rem_port = utilities.hex_to_decimal(rem_addressHEX[1]);
             protocol = utilities.get_protocol_name(rem_port);
-
 
             conStatusCode = Integer.parseInt(utilities.hex_to_decimal(tcpIndividualConn[4]));
 
@@ -102,20 +100,26 @@ public class NEOM {
             UID = tcpIndividualConn[8];
             inode = tcpIndividualConn[10];
 
-
             //System.out.println("Inode for lookup =" + inode);
             pid_pname = inode_uid_process_maping.pid_processName_lookup(inode); //pid and processname lookup in Hashtable
             //System.out.println(pid_pname);
             if (pid_pname != null) {
-
                 pid = pid_pname.get(0);
                 //System.out.println("pid" + pid);
                 processName = pid_pname.get(1);
                 //System.out.println("processName" + processName);
+                log_per_con.append("|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName + "|" + protocol);
+                nw_inter_list = utilities.get_data_transfer(pid);
+                for (NW_Interfaces item : nw_inter_list) {
+                    log_per_con.append("|" + item.getInterface_Name() + "| Recv:" + item.getReceived_bytes() + "| Trns:" + item.getTransmitted_bytes());
+                }
+
             }
+            System.out.println(log_per_con.toString());
+
             //System.out.println("timestamp" + " " + "local_IP" + " " + "local_port" + " " + "rem_IP" + " " + "rem_port" + " " + "tcpConStatus");
 
-            System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName + "|" + protocol);
+            //System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName + "|" + protocol);
             //System.out.println("tcpConFieldsLength=" + tcpCon);
             //System.out.println("tcpConFieldsLength=" + tcpConFields.length);
             //String  local_addressHEX = tcpConFields[1];
