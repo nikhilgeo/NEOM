@@ -9,7 +9,7 @@ import java.util.List;
 
 public class NEOM {
     static String tcpConnections, tcpCon, pattern;
-    static String rem_IP, rem_port, local_IP, local_port, UID, inode, tcpConStatus, timestamp, pid, processName;
+    static String rem_IP, rem_port, local_IP, local_port, UID, inode, tcpConStatus, timestamp, pid, processName, protocol;
     static int conStatusCode;
     static Utilities utilities = new Utilities();
     static Inode_uid_process_Maping inode_uid_process_maping = new Inode_uid_process_Maping();
@@ -89,6 +89,8 @@ public class NEOM {
             String rem_addressHEX[] = tcpIndividualConn[3].split(":"); //split Remote IP:Port
             rem_IP = utilities.little_endianIP_to_decimal(rem_addressHEX[0]);
             rem_port = utilities.hex_to_decimal(rem_addressHEX[1]);
+            protocol = utilities.get_protocol_name(rem_port);
+
 
             conStatusCode = Integer.parseInt(utilities.hex_to_decimal(tcpIndividualConn[4]));
 
@@ -113,7 +115,7 @@ public class NEOM {
             }
             //System.out.println("timestamp" + " " + "local_IP" + " " + "local_port" + " " + "rem_IP" + " " + "rem_port" + " " + "tcpConStatus");
 
-            System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName);
+            System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName + "|" + protocol);
             //System.out.println("tcpConFieldsLength=" + tcpCon);
             //System.out.println("tcpConFieldsLength=" + tcpConFields.length);
             //String  local_addressHEX = tcpConFields[1];
