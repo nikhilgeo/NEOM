@@ -39,9 +39,40 @@ public class Utilities {
             decimal = Integer.parseInt(octect, 16);
             //System.out.println("decimal" + decimal);
             reversed_IP = reversed_IP.append(decimal);
-            reversed_IP = reversed_IP.append(":");
+            reversed_IP = reversed_IP.append(".");
         }
         IPAddr = reversed_IP.toString();
         return IPAddr.substring(0, IPAddr.length() - 1);
+    }
+
+    public String get_protocol_name(String port) {
+        try {
+            int port_number;
+            port_number = Integer.valueOf(port);
+            switch (port_number) {
+                case 20:
+                case 21:
+                    return "FTP";
+                case 22:
+                    return "SSH";
+                case 25:
+                    return "SMTP";
+                case 53:
+                    return "DNS";
+                case 80:
+                    return "HTTP";
+                case 110:
+                    return "POP3";
+                case 143:
+                    return "IMAP";
+                case 443:
+                    return "HTTPS";
+                default:
+                    return port;
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return port;
+        }
     }
 }
