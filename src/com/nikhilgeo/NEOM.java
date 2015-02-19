@@ -100,23 +100,24 @@ public class NEOM {
             UID = tcpIndividualConn[8];
             inode = tcpIndividualConn[10];
 
-            //System.out.println("Inode for lookup =" + inode);
-            pid_pname = inode_uid_process_maping.pid_processName_lookup(inode); //pid and processname lookup in Hashtable
-            //System.out.println(pid_pname);
-            if (pid_pname != null) {
-                pid = pid_pname.get(0);
-                //System.out.println("pid" + pid);
-                processName = pid_pname.get(1);
-                //System.out.println("processName" + processName);
-                log_per_con.append("|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName + "|" + protocol);
-                nw_inter_list = utilities.get_data_transfer(pid);
-                for (NW_Interfaces item : nw_inter_list) {
-                    log_per_con.append("|" + item.getInterface_Name() + "| Recv:" + item.getReceived_bytes() + "| Trns:" + item.getTransmitted_bytes());
-                }
+            if (!inode.equals("0")) { //Some connection will have inode =0 skip them
+                //System.out.println("Inode for lookup =" + inode);
+                pid_pname = inode_uid_process_maping.pid_processName_lookup(inode); //pid and processname lookup in Hashtable
+                //System.out.println(pid_pname);
+                if (pid_pname != null) {
+                    pid = pid_pname.get(0);
+                    //System.out.println("pid" + pid);
+                    processName = pid_pname.get(1);
+                    //System.out.println("processName" + processName);
+                    log_per_con.append("|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|inode:" + inode + "|pid:" + pid + "|" + processName + "|protocol:" + protocol);
+                    nw_inter_list = utilities.get_data_transfer(pid);
+                    for (NW_Interfaces item : nw_inter_list) {
+                        log_per_con.append("|" + item.getInterface_Name() + "| Recv:" + item.getReceived_bytes() + "| Trns:" + item.getTransmitted_bytes());
+                    }
 
-            }
-            System.out.println(log_per_con.toString());
-
+                } //if (pid_pname != null)
+                System.out.println(log_per_con.toString());
+            } //if(inode == "0")
             //System.out.println("timestamp" + " " + "local_IP" + " " + "local_port" + " " + "rem_IP" + " " + "rem_port" + " " + "tcpConStatus");
 
             //System.out.println(timestamp + "|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|" + inode + "|" + pid + "|" + processName + "|" + protocol);
