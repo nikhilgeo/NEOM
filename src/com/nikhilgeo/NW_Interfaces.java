@@ -3,7 +3,7 @@ package com.nikhilgeo;
 import java.util.List;
 
 /**
- * Created by root on 18/2/15.
+ * Created by nikhil on 18/2/15.
  */
 public class NW_Interfaces {
     private String interface_Name, received_bytes, transmitted_bytes;
