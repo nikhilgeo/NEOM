@@ -170,9 +170,13 @@ public class Inode_uid_process_Maping {
         try {
             pid_pName = inode_pid_pname_mapping.get(inode);
             if (pid_pName == null) {
-                pid_pName = new ArrayList<String>();
-                pid_pName.add("Unknown");
-                pid_pName.add("Unknown");
+                get_pid_inode_processName();
+                pid_pName = inode_pid_pname_mapping.get(inode);
+                if (pid_pName == null) {
+                    pid_pName = new ArrayList<String>();
+                    pid_pName.add("Unknown");
+                    pid_pName.add("Unknown");
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
