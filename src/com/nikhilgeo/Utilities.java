@@ -1,12 +1,10 @@
 package com.nikhilgeo;
 
-import jdk.nashorn.internal.ir.CatchNode;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by nikhil on 13/2/15.
@@ -86,33 +84,5 @@ public class Utilities {
         }
     }
 
-    public ArrayList<NW_Interfaces> get_data_transfer(String pid) {
-        String dev_data;
-        String interface_details[];
-        String interface_details_row[];
-        int interface_count;
-        ArrayList<NW_Interfaces> nw_interface_list = new ArrayList<NW_Interfaces>();
-        NW_Interfaces nw_interfaces;
-        try {
-            dev_data = readFile_InOneGO("/proc/" + pid + "/net/dev");
-            interface_details = dev_data.split("\n");
-            interface_count = interface_details.length;
-            for (int interface_index = 2; interface_index < interface_count; interface_index++) {
-                interface_details_row = interface_details[interface_index].trim().split("\\s+");
-//                System.out.println(interface_details_row[0]);
-//                System.out.println(interface_details_row[1]);
-//                System.out.println(interface_details_row[9]);
-                nw_interfaces = new NW_Interfaces();
-                nw_interfaces.setInterface_Name(interface_details_row[0]);
-                nw_interfaces.setReceived_bytes(interface_details_row[1]);
-                nw_interfaces.setTransmitted_bytes(interface_details_row[9]);
-                nw_interface_list.add(nw_interfaces);
-            }
-            return nw_interface_list;
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
-        }
 
-        return null;
-    }
 }
