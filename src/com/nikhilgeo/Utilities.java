@@ -22,6 +22,7 @@ public class Utilities {
         Charset encoding = Charset.forName("UTF-8");
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(path));
+
             return new String(encoded, encoding);
         } catch (Exception ex) {
             System.out.println("Error in Utilities.readFile_InOneGO : " + ex.getMessage());

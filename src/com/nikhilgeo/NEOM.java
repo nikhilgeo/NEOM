@@ -12,6 +12,7 @@ public class NEOM {
     static String rem_IP, rem_port, local_IP, local_port, UID, inode, tcpConStatus, timestamp, pid, processName, protocol;
     static int conStatusCode;
     static Utilities utilities = new Utilities();
+    static NW_Interfaces nw_interfaces = new NW_Interfaces();
     static Inode_uid_process_Maping inode_uid_process_maping = new Inode_uid_process_Maping();
 
     public static enum tcp_status { /* As defined in ./include/net/tcp_states.h */
@@ -110,7 +111,7 @@ public class NEOM {
                     processName = pid_pname.get(1);
                     //System.out.println("processName" + processName);
                     log_per_con.append("|" + local_IP + "|" + local_port + "|" + rem_IP + "|" + rem_port + "|" + tcpConStatus + "|inode:" + inode + "|pid:" + pid + "|" + processName + "|protocol:" + protocol);
-                    nw_inter_list = utilities.get_data_transfer(pid);
+                    nw_inter_list = nw_interfaces.get_data_transfer(pid);
                     for (NW_Interfaces item : nw_inter_list) {
                         log_per_con.append("|" + item.getInterface_Name() + "| Recv:" + item.getReceived_bytes() + "| Trns:" + item.getTransmitted_bytes());
                     }
